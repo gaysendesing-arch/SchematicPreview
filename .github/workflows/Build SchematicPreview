@@ -1,0 +1,35 @@
+name: Build SchematicPreview
+
+on:
+  push:
+    branches: [ "main" ]   # запуск при пуше в main
+  pull_request:
+    branches: [ "main" ]   # запуск при PR в main
+  workflow_dispatch:        # позволяет запускать вручную из Actions
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Build with Gradle
+        run: ./gradlew build --no-daemon
+
+      - name: Upload mod artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: schematicpreview-jar
+          path: build/libs/*.jar
+
